@@ -10,7 +10,7 @@ const sessionMiddleware = session({
     mongoUrl: process.env.DATABASE_KEY,
     collectionName: "sessions",
   }),
-  cookie: { maxAge: 86400000, secure: true, httpOnly: true },
+  cookie: { maxAge: 86400000, sameSite: "none", secure: true, httpOnly: true },
 });
 
 const corsConfig = {
