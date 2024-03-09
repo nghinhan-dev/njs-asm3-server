@@ -7,7 +7,7 @@ const httpServer = createServer();
 
 (async () => {
   await createApp(httpServer);
-  httpServer.listen(process.env.PORT || 3000, () =>
-    console.log(`Rocking on ${process.env.PORT || 3000} 🚀`)
+  httpServer.listen(process.env.PORT || 5000, () =>
+    console.log(`Rocking on ${process.env.PORT || 5000} 🚀`)
   );
 })();
