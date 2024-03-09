@@ -27,15 +27,15 @@ async function createApp(httpServer) {
   // initIOEvent(io);
 
   useRoutes(app);
+  app.use(handleErrors);
 }
 
 function createExpressApp() {
   const app = express();
 
-  app.enable("trust proxy");
+  // app.enable("trust proxy");
   app.use(bodyParser.json());
   app.use(cookieParser());
-  app.use(express.static(path.join(__dirname, "client", "dist")));
 
   app.use(function (req, res, next) {
     res.header("Content-Type", "application/json;charset=UTF-8");
@@ -53,6 +53,13 @@ function createExpressApp() {
 function initAuth(app, io) {
   app.use(sessionMiddleware);
   // io.engine.use(sessionMiddleware);
+}
+
+function handleErrors(error, req, res, next) {
+  const status = error.statusCode || 500;
+  const message = error.message;
+  const errors = error.errors;
+  res.status(status).send({ message: message, errors: errors });
 }
 
 module.exports = { createApp };

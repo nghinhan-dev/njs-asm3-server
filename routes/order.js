@@ -8,7 +8,7 @@ const auth = require("../middleware/auth");
 router.post(
   "/post",
   auth.login,
-  orderValidator.addOrderValidator,
+  orderValidator.addOrderValidator(),
   orderController.postOrder
 );
 router.get("/", auth.login, orderController.getOrders);

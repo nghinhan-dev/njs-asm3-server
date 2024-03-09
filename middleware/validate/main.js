@@ -2,17 +2,25 @@ const { validationResult } = require("express-validator");
 
 const validator = (validations) => {
   return async (req, res, next) => {
-    await Promise.all(validations.map((validation) => validation.run(req)));
+    try {
+      await Promise.all(validations.map((validation) => validation.run(req)));
 
-    const errors = validationResult(req);
+      const errors = validationResult(req);
 
-    if (errors.isEmpty()) {
-      return next();
+      if (errors.isEmpty()) {
+        return next();
+      }
+
+      const errorArr = errors.array();
+
+      const error = new Error("Invalid fields");
+      error.statusCode = 400;
+      error.errors = errorArr;
+
+      throw error;
+    } catch (error) {
+      next(error);
     }
-
-    const error = errors.array();
-
-    return res.status(400).json({ message: error[0].msg });
   };
 };
 

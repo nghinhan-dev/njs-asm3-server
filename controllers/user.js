@@ -159,7 +159,10 @@ exports.updateCart = async (req, res) => {
         quantity: updatedItem.newQuantity,
       };
 
+      const item = await Product.findById(updatedItem._id);
+
       user.cart.items.push(newItem);
+      user.cart.totalPrice = +item.price * newItem.quantity;
 
       await user.save();
       return res.status(200).send({ updateItem: newItem });
@@ -229,4 +232,26 @@ exports.getCartItem = async (req, res) => {
   };
 
   res.status(200).send(cartItem);
+};
+
+exports.delCartItem = async (req, res) => {
+  const itemID = req.params.itemID;
+  const user = req.user;
+  const cartItemIndex = user.cart.items.findIndex(
+    (itemDetail) => itemDetail.item._id.toString() === itemID
+  );
+
+  if (cartItemIndex === -1) {
+    return res.status(404).send({
+      error: "Cannot delete",
+      message: "Provided id params is incorrect",
+    });
+  }
+
+  [1, 2, 3].slice();
+
+  user.cart.items.slice(cartItemIndex);
+  user.cart.totalPrice = user.cart.items.reduce((acc, cur) => {
+    return acc + cur.item.price * cur.quantity;
+  }, 0);
 };
