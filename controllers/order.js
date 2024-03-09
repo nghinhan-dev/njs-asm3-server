@@ -1,24 +1,42 @@
 const Order = require("../models/Orders");
+const User = require("../models/User");
+const { sendMail } = require("../util/mailService");
 
 exports.postOrder = async (req, res) => {
   const reqAddress = req.body.address;
 
-  const newOrder = new Order({
-    user: req.user._id,
-    address: reqAddress,
-    items: req.user.cart.items,
-    total: req.user.cart.totalPrice,
-  });
+  try {
+    const newOrder = new Order({
+      user: req.user._id,
+      address: reqAddress,
+      items: req.user.cart.items,
+      total: req.user.cart.totalPrice,
+    });
 
-  req.user.cart = {
-    items: [],
-    totalPrice: 0,
-  };
+    const user = await req.user.populate({
+      path: "cart",
+      populate: {
+        path: "items",
+        populate: {
+          path: "item",
+        },
+      },
+    });
 
-  await req.user.save();
-  await newOrder.save();
+    await sendMail(user, newOrder.address, newOrder.total, user.cart.items);
 
-  res.status(200).send(newOrder);
+    req.user.cart = {
+      items: [],
+      totalPrice: 0,
+    };
+
+    await newOrder.save();
+    await req.user.save();
+
+    res.status(200).send(newOrder);
+  } catch (error) {
+    console.log("error:", error);
+  }
 };
 
 exports.getOrders = async (req, res) => {
