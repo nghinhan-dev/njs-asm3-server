@@ -12,9 +12,9 @@ const sessionMiddleware = session({
   }),
   cookie: {
     maxAge: 86400000,
-    sameSite: "none",
-    secure: true,
-    httpOnly: true,
+    // sameSite: "none",
+    // secure: true,
+    // httpOnly: true,
   },
 });
 
@@ -23,6 +23,7 @@ const corsConfig = {
     "http://localhost:3000",
     "http://localhost:3001",
     "https://njs-asm3-client.onrender.com",
+    "https://njs-asm3-admin.onrender.com",
   ],
   credentials: true,
 };
